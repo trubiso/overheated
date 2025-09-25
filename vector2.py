@@ -18,6 +18,14 @@ class Vector2:
 	def __sub__(self, value: Self):
 		return self + -value
 	
+	def to_tuple(self):
+		return self.x, self.y
+	
+	@staticmethod
+	def from_tuple(tuple: tuple[float, float]):
+		x, y = tuple
+		return Vector2(x, y)
+
 	def to_string(self):
 		return f"({self.x}, {self.y})"
 	

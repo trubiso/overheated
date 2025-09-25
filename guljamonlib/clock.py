@@ -5,8 +5,9 @@ class Clock:
         self.__last = time.time()
         self.__spf = 1 / fps
 
-    def delay (self):
+    def delay (self) -> float:
         new = time.time()
         dt = new - self.__last
         time.sleep(max(0, self.__spf - dt))
         self.__last = time.time()
+        return dt

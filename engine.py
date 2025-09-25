@@ -1,89 +1,75 @@
+from enum import Enum
+from typing import Optional
 import pygame
-pygame.init()
+from guljamonlib.clock import Clock
+from guljamonlib.controller import Controller
+from object import Object
 
-engine = None
-deafult_width = 640
-deafult_height = 480
 
-keys_down = set()
-import pygame
-
-def key_pressed(key):
-    return key in keys_down
-
-def mouse_pressed(button):
-    return pygame.mouse.get_pressed()[button]
+class ObjectKind(Enum):
+	BACKGROUND = 1
+	REGULAR = 2
+	UI = 3
 
 class Engine:
-            
-    def __init__(self):
-        global engine
-        engine = self
+	def __init__(self, size: tuple[int, int], controller: Controller, fps = 30):
+		global engine
+		engine = self
 
-        self.active_objs = []
+		pygame.init()
+		self.size = size
+		self.screen = pygame.display.set_mode(size)
+		self.controller = controller
+		self.fps = fps
+		self.background_objects: list[Object] = []
+		self.objects: list[Object] = []
+		self.ui_objects: list[Object] = []
+		self.stages = {}
+		self.current_stage = None
+		pygame.display.set_caption("OVERHEATED")
+	
+	def add_object(self, game_object: Object, kind: ObjectKind):
+		match kind:
+			case ObjectKind.BACKGROUND:
+				self.background_objects.append(game_object)
+			case ObjectKind.REGULAR:
+				self.objects.append(game_object)
+			case ObjectKind.UI:
+				self.ui_objects.append(game_object)
+	
+	def reset(self):
+		self.background_objects = []
+		self.objects = []
+		self.ui_objects = []
 
-        self.background_drawables = [] # backgrounds
-        self.drawables = [] #drawn in the world
-        self.ui_drawables = [] # drawn ui
+	def register(self, stage_name, func):
+		self.stages[stage_name] = func
 
-        self.clear_color = (30,150,240)
+	def switch_to(self, stage_name):
+		self.reset()
+		self.current_stage = stage_name
+		func = self.stages[stage_name]
+		print(f"Switching to {self.current_stage}")
+		func(self)
+	
+	def run(self):
+		clock = Clock(self.fps)
+		delta_time = 1
+		while not self.controller.shouldClose():
+			self.controller.poll()
+			self.update(delta_time)
+			self.screen.fill(pygame.Color(0, 0, 0))
+			self.draw()
+			pygame.display.update()
+			delta_time = clock.delay()
+		pygame.quit()
+	
+	def update(self, dt):
+		for game_object in self.background_objects + self.objects + self.ui_objects:
+			game_object.update(self.controller, dt)
 
-        self.screen = self.create_screen()
+	def draw(self):
+		for game_object in self.background_objects + self.objects + self.ui_objects:
+			game_object.draw(self.screen)
 
-        self.stages = {}
-        self.current_stage = None
-
-    def create_screen(self):
-        pygame.display.set_caption("OVERHEATED")
-
-        screen = pygame.display.set_mode((620,480))
-
-    def register(self, stage_name, func):
-        self.stages[stage_name] = func
-
-
-    def switch_to(self,stage_name):
-        self.reset()
-        self.current_stage = stage_name
-        func = self.stages [stage_name]
-        print(f"Switching to {self.current_stage}") # for debug
-        func()
-
-    def run(self):
-        from input import keys_down
-
-        self.running = True
-        while self.running:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    self.running = False
-                elif event.type == pygame.KEYDOWN:
-                    keys_down.add(event.key)
-                elif event.type == pygame.KEYUP:
-                    keys_down.remove(event.key)
-
-            for a in self.active_objs:
-                a.update()
-
-            pygame.display.get_surface().fill(self.clear_color)
-
-            for b in self.background_drawables:
-                b.draw(self.screen)
-
-            for s in self.drawables:
-                s.draw(self.screen)
-
-            for l in self.ui_drawables:
-                l.draw(self.screen)
-
-            pygame.display.flip()
-
-            pygame.time.delay(17)
-
-        pygame.quit()
-
-
-
-    def reset(self):
-        pass
-
+engine: Optional[Engine] = None
