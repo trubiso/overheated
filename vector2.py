@@ -1,5 +1,5 @@
 from typing import Self
-from utils import lerp
+from utils import clamp, lerp, wrap
 
 class Vector2:
 	def __init__(self, x: float, y: float):
@@ -21,6 +21,12 @@ class Vector2:
 	def to_string(self):
 		return f"({self.x}, {self.y})"
 	
+	def clamp(self, min: Self, max: Self):
+		return Vector2(clamp(self.x, min.x, max.x), clamp(self.y, min.y, max.y))
+	
+	def wrap(self, min: Self, max: Self):
+		return Vector2(wrap(self.x, min.x, max.x), wrap(self.y, min.y, max.y))
+
 	def lerp(self, destination: Self, strength: float):
 		self.x = lerp(self.x, destination.x, strength)
 		self.y = lerp(self.y, destination.y, strength)
