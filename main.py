@@ -69,14 +69,10 @@ class BackgroundController(GameObject):
 		
 		pygame.transform.scale(self.surface, (640, 480), win)
 
-# class player:
-
-	
 q = Vector2(3, 5)
 t = Vector2(4, 9)
 print((q + t).to_string())
 
-# patata en sopa
 class Enemy:
 	def __init__(self, x, y, width, height, tileset, speed):
 		pass
