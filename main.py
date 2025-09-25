@@ -79,7 +79,15 @@ print((q + t).to_string())
 # patata en sopa
 class Enemy:
 	def __init__(self, x, y, width, height, tileset, speed):
-		pass
+		self.x = x
+		self.y = y
+		self.width = width
+		self.height = height
+		self.tileset = tileset
+		self.speed = speed
+
+		
+		
 
 game = Game(640, 480, PygameController(), 60)
 background_controller = BackgroundController(sprites.PIXEL_PLATFORMER_BACKGROUNDS, 4, 2, 2, 2)
