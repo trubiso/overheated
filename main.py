@@ -81,17 +81,21 @@ class BackgroundController(GameObject):
 				self.offset = self.offset.wrap(Vector2.zero(), Vector2(self.tile_size * self.i_qty, self.tile_size * self.j_qty))
 			self.scroll_ctr = 0
 
-# class player:
-
-	
 q = Vector2(3, 5)
 t = Vector2(4, 9)
 print((q + t).to_string())
 
-# patata en sopa
 class Enemy:
 	def __init__(self, x, y, width, height, tileset, speed):
-		pass
+		self.x = x
+		self.y = y
+		self.width = width
+		self.height = height
+		self.tileset = tileset
+		self.speed = speed
+
+		
+		
 
 game = Game(640, 480, PygameController(), 60)
 background_controller = BackgroundController(sprites.PIXEL_PLATFORMER_BACKGROUNDS, 4, 2, 2, 1, Vector2(1, 0))
