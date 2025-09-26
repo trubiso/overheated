@@ -43,3 +43,4 @@ class BackgroundController(Object):
 				self.offset += self.scroll
 				self.offset = self.offset.wrap(Vector2.zero(), Vector2(self.tile_size * self.i_qty, self.tile_size * self.j_qty))
 			self.scroll_ctr = 0
+
