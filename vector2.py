@@ -17,6 +17,9 @@ class Vector2:
 	
 	def __sub__(self, value: Self):
 		return self + -value
+
+	def __mul__(self, value: float):
+		return Vector2(self.x * value, self.y * value)
 	
 	def to_tuple(self):
 		return self.x, self.y

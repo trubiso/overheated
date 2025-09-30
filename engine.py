@@ -3,6 +3,7 @@ from typing import Optional
 import pygame
 from guljamonlib.clock import Clock
 from guljamonlib.controller import Controller
+from guljamonlib.pygame_controller import PygameController
 from object import Object
 
 
@@ -13,30 +14,32 @@ class ObjectKind(Enum):
 
 class Engine:
 	def __init__(self, size: tuple[int, int], controller: Controller, fps = 30):
-		global engine
-		engine = self
-
 		pygame.init()
 		self.size = size
 		self.screen = pygame.display.set_mode(size)
 		self.controller = controller
 		self.fps = fps
-		self.background_objects: list[Object] = []
-		self.objects: list[Object] = []
-		self.ui_objects: list[Object] = []
+		self.background_objects: list[tuple[str, Object]] = []
+		self.objects: list[tuple[str, Object]] = []
+		self.ui_objects: list[tuple[str, Object]] = []
 		self.stages = {}
 		self.current_stage = None
 		pygame.display.set_caption("OVERHEATED")
 	
-	def add_object(self, game_object: Object, kind: ObjectKind):
+	def add_object(self, game_object: Object, kind: ObjectKind, label: str):
 		match kind:
 			case ObjectKind.BACKGROUND:
-				self.background_objects.append(game_object)
+				self.background_objects.append((label, game_object))
 			case ObjectKind.REGULAR:
-				self.objects.append(game_object)
+				self.objects.append((label, game_object))
 			case ObjectKind.UI:
-				self.ui_objects.append(game_object)
+				self.ui_objects.append((label, game_object))
 	
+	def find_object(self, label: str) -> Optional[Object]:
+		for object_label, object in self.background_objects + self.objects + self.ui_objects:
+			if object_label == label:
+				return object
+
 	def reset(self):
 		self.background_objects = []
 		self.objects = []
@@ -66,10 +69,11 @@ class Engine:
 	
 	def update(self, dt):
 		for game_object in self.background_objects + self.objects + self.ui_objects:
-			game_object.update(self.controller, dt)
+			game_object[1].update(self.controller, dt)
 
 	def draw(self):
 		for game_object in self.background_objects + self.objects + self.ui_objects:
-			game_object.draw(self.screen)
+			game_object[1].draw(self.screen)
 
-engine: Optional[Engine] = None
+SCREEN_SIZE = (640, 480)
+engine = Engine(SCREEN_SIZE, PygameController(), 60)
